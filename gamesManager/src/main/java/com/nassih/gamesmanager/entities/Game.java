@@ -19,7 +19,7 @@ public class Game {
     private String id;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date dateAndTime;
-    private String Stadium;
+    private String stadium;
     private String team1;
     private String team2;
     private String ref;
