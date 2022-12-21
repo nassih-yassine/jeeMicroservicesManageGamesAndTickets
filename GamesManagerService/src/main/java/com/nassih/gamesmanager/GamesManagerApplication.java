@@ -6,7 +6,6 @@ import com.nassih.gamesmanager.dtos.outputDtos.GameOutputDto;
 import com.nassih.gamesmanager.services.Game.GameServices;
 import com.nassih.gamesmanager.services.Ticket.TicketServices;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,7 +26,7 @@ public class GamesManagerApplication {
         SpringApplication.run(GamesManagerApplication.class, args);
     }
 
-    @Bean
+    //@Bean
     CommandLineRunner commandLineRunner (){
         return args -> {
             String d1 = "2022-11-18 12:00";

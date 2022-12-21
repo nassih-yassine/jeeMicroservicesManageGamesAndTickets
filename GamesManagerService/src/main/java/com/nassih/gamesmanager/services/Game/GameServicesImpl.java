@@ -3,6 +3,8 @@ package com.nassih.gamesmanager.services.Game;
 import com.nassih.gamesmanager.dtos.inputDtos.GameInputDto;
 import com.nassih.gamesmanager.dtos.outputDtos.GameOutputDto;
 import com.nassih.gamesmanager.entities.Game;
+import com.nassih.gamesmanager.exceptions.custome.InvalidTicketsNumberException;
+import com.nassih.gamesmanager.exceptions.custome.MissingFieldsException;
 import com.nassih.gamesmanager.mappers.MapperService;
 import com.nassih.gamesmanager.repositories.GameRepository;
 import lombok.AllArgsConstructor;
@@ -20,14 +22,14 @@ public class GameServicesImpl implements GameServices {
     private MapperService mapperService;
 
     @Override
-    public GameOutputDto createGame(GameInputDto gameInputDto){
+    public GameOutputDto createGame(GameInputDto gameInputDto) throws MissingFieldsException, InvalidTicketsNumberException {
         if (gameInputDto.getDateAndTime() == null || gameInputDto.getAvailableTickets() == null
         || gameInputDto.getStadium()==null || gameInputDto.getStadium().isEmpty()
         || gameInputDto.getTeam1() == null || gameInputDto.getTeam1().isEmpty()
         || gameInputDto.getTeam2() == null || gameInputDto.getTeam2().isEmpty())
-            throw new RuntimeException("Missing Fields");
+            throw new MissingFieldsException();
         if (gameInputDto.getAvailableTickets() > 2022 || gameInputDto.getAvailableTickets() <= 0)
-            throw new RuntimeException("Number of tickets should be between 1 and 2022");
+            throw new InvalidTicketsNumberException(gameInputDto.getAvailableTickets());
         Game game = new Game();
         game.setId(UUID.randomUUID().toString());
         game.setDateAndTime(gameInputDto.getDateAndTime());
