@@ -3,6 +3,10 @@ package com.nassih.gamesmanager;
 import com.nassih.gamesmanager.dtos.inputDtos.GameInputDto;
 import com.nassih.gamesmanager.dtos.inputDtos.TicketInputDto;
 import com.nassih.gamesmanager.dtos.outputDtos.GameOutputDto;
+import com.nassih.gamesmanager.exceptions.custome.GameIdNotFoundException;
+import com.nassih.gamesmanager.exceptions.custome.InvalidTicketsNumberException;
+import com.nassih.gamesmanager.exceptions.custome.MissingFieldsException;
+import com.nassih.gamesmanager.exceptions.custome.TicketsSoldOutException;
 import com.nassih.gamesmanager.services.Game.GameServices;
 import com.nassih.gamesmanager.services.Ticket.TicketServices;
 import lombok.AllArgsConstructor;
@@ -52,14 +56,23 @@ public class GamesManagerApplication {
                     new GameInputDto(date5, "Stadium2", "Team4", "Team2", 700),
                     new GameInputDto(date6, "Stadium2", "Team1", "Team3", 1500)
             ).forEach(elem -> {
-                GameOutputDto gameOutputDto = gameServices.createGame(elem);
+                GameOutputDto gameOutputDto = null;
+                try {
+                    gameOutputDto = gameServices.createGame(elem);
+                } catch (MissingFieldsException | InvalidTicketsNumberException e) {
+                    throw new RuntimeException(e);
+                }
                 Random random = new Random();
                 int tickets = random.nextInt(0, elem.getAvailableTickets());
                 for(int i=0; i< tickets; i++){
-                    ticketServices.buyTicket(
-                            new TicketInputDto(random.nextDouble(1500.0),
-                            gameOutputDto.getId())
-                    );
+                    try {
+                        ticketServices.buyTicket(
+                                new TicketInputDto(random.nextDouble(1500.0),
+                                gameOutputDto.getId())
+                        );
+                    } catch (MissingFieldsException | GameIdNotFoundException | TicketsSoldOutException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             });
 
