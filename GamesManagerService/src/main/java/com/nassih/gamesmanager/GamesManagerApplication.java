@@ -1,13 +1,69 @@
 package com.nassih.gamesmanager;
 
+import com.nassih.gamesmanager.dtos.inputDtos.GameInputDto;
+import com.nassih.gamesmanager.dtos.inputDtos.TicketInputDto;
+import com.nassih.gamesmanager.dtos.outputDtos.GameOutputDto;
+import com.nassih.gamesmanager.services.Game.GameServices;
+import com.nassih.gamesmanager.services.Ticket.TicketServices;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
+import java.util.stream.Stream;
 
 @SpringBootApplication
+@AllArgsConstructor
 public class GamesManagerApplication {
+    GameServices gameServices;
+    TicketServices ticketServices;
 
     public static void main(String[] args) {
         SpringApplication.run(GamesManagerApplication.class, args);
     }
 
+    @Bean
+    CommandLineRunner commandLineRunner (){
+        return args -> {
+            String d1 = "2022-11-18 12:00";
+            String d2 = "2022-12-01 12:45";
+            String d3 = "2022-11-13 20:15";
+            String d4 = "2022-11-20 22:00";
+            String d5 = "2022-11-15 18:30";
+            String d6 = "2022-11-22 12:45";
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            Date date1 = format.parse(d1);
+            Date date2 = format.parse(d2);
+            Date date3 = format.parse(d3);
+            Date date4 = format.parse(d4);
+            Date date5 = format.parse(d5);
+            Date date6 = format.parse(d6);
+
+            Stream.of(
+                    new GameInputDto(date1, "Stadium1", "Team1", "Team2", 2022),
+                    new GameInputDto(date2, "Stadium2", "Team3", "Team4", 1000),
+                    new GameInputDto(date3, "Stadium3", "Team1", "Team4", 500),
+                    new GameInputDto(date4, "Stadium1", "Team3", "Team2", 2000),
+                    new GameInputDto(date5, "Stadium2", "Team4", "Team2", 700),
+                    new GameInputDto(date6, "Stadium2", "Team1", "Team3", 1500)
+            ).forEach(elem -> {
+                GameOutputDto gameOutputDto = gameServices.createGame(elem);
+                Random random = new Random();
+                int tickets = random.nextInt(0, elem.getAvailableTickets());
+                for(int i=0; i< tickets; i++){
+                    ticketServices.buyTicket(
+                            new TicketInputDto(random.nextDouble(1500.0),
+                            gameOutputDto.getId())
+                    );
+                }
+            });
+
+        };
+    }
 }
